@@ -8,16 +8,16 @@ const BottomBar = () => {
   const path = usePathname()
   return (
     <View className="absolute bottom-0 flex-row justify-center w-full pb-3">
-{
-  !path.includes("addTask") && 
-  <TouchableOpacity onPress={() => route.push('/addTask/AddTask')}>
+      {
+        !path.includes("AddJournal") &&
+        <TouchableOpacity onPress={() => route.push('/AddJournal/AddJournal')}>
 
-  < View className='bg-[#9191ed] rounded-full p-3'>
-  <AntDesign name="plus" className='font-bold' size={30} color="black" />
-  </View>
-  </TouchableOpacity>
-}
-    
+          < View className='bg-[#9191ed] rounded-full p-3'>
+            <AntDesign name="plus" className='font-bold' size={30} color="black" />
+          </View>
+        </TouchableOpacity>
+      }
+
     </View>
   )
 }
