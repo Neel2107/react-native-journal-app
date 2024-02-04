@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { truncateText } from "@/utils/HelperFunctions";
-import { deleteDoc, doc } from "firebase/firestore";
-import { FIREBASE_DB } from "@/firebase";
+import { useRouter } from "expo-router";
+
 
 // Define a more comprehensive type for the component props
 interface JournalItemProps {
@@ -11,13 +11,17 @@ interface JournalItemProps {
     id: string; // Include 'id' in your type definition to avoid TypeScript errors,
     time: string;
     date: string;
+    
   };
   deleteJournal: () => void; // Correctly include deleteJournal as a function prop
 }
 
-const JournalItem: React.FC<JournalItemProps> = ({ item, deleteJournal }) => {
+const JournalItem: React.FC<JournalItemProps> = ({ item, deleteJournal,navigateToReadJournal }) => {
+
+  
+  const route = useRouter()
   return (
-    <View className="flex flex-row w-full  justify-between items-center px-4   py-4 bg-[#282854] my-2 rounded-lg">
+    <TouchableOpacity  onPress={navigateToReadJournal}className="flex flex-row w-full  justify-between items-center px-4   py-4 bg-[#282854] my-2 rounded-lg">
       <View className="flex flex-col  ">
         <Text className="text-[#e5e1ff] mb-2 text-lg font-semibold">
           {truncateText(item.title, 30)}
@@ -34,7 +38,7 @@ const JournalItem: React.FC<JournalItemProps> = ({ item, deleteJournal }) => {
           <Text className="text-[#ffc8c8] font-semibold ">Delete</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

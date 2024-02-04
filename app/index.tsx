@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -8,10 +9,18 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { FIREBASE_DB } from "@/firebase";
 import JournalItem from "@/components/JournalItem/JournalItem";
 import { formatTimestamp } from "@/utils/HelperFunctions";
+import { useRouter } from "expo-router";
 
 export interface Journal {
   title: string;
@@ -23,42 +32,66 @@ export interface Journal {
 }
 const List = () => {
   const [journals, setJournals] = useState<Journal[]>([]);
-useEffect(() => {
-  const journalRef = collection(FIREBASE_DB, "journal");
-  // Update the orderBy clause to use the "timestamp" field
-  const q = query(journalRef, orderBy("timestamp", "desc"));
+  const [loading, setLoading] = useState(true); // Add a loading state
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    const journalsList: Journal[] = [];
-    snapshot.docs.forEach((doc) => {
-      const data = doc.data() as Journal;
-      const { formattedDate, formattedTime } = formatTimestamp(data.timestamp);
-      journalsList.push({
-        ...data,
-        id: doc.id,
-        title: data.title,
-        date: formattedDate, // Now in DD/MM/YYYY
-        time: formattedTime, // Now in hh:mm AM/PM
+  useEffect(() => {
+    const journalRef = collection(FIREBASE_DB, "journal");
+    // Update the orderBy clause to use the "timestamp" field
+    const q = query(journalRef, orderBy("timestamp", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const journalsList: Journal[] = [];
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data() as Journal;
+        const { formattedDate, formattedTime } = formatTimestamp(
+          data.timestamp
+        );
+        journalsList.push({
+          ...data,
+          id: doc.id,
+          title: data.title,
+          date: formattedDate, // Now in DD/MM/YYYY
+          time: formattedTime, // Now in hh:mm AM/PM
+        });
       });
+      // Sorting is not needed anymore since Firestore is doing it already
+      setJournals(journalsList);
+      setLoading(false); // Set loading to false once data is fetched
+
     });
-    // Sorting is not needed anymore since Firestore is doing it already
-    setJournals(journalsList);
-  });
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
-
+  const router = useRouter();
 
   const renderItem = ({ item }: any) => {
-    const ref = doc(FIREBASE_DB, "journal", item.id);
+    // Use the router from expo-router
 
-    const deleteJournal = () => {
-      deleteDoc(ref);
+    const deleteJournal = async () => {
+      await deleteDoc(doc(FIREBASE_DB, "journal", item.id));
     };
 
-    return <JournalItem item={item} deleteJournal={deleteJournal} />;
+    const navigateToReadJournal = () => {
+      console.log("Journal ID being passed:", item.id); // This should log the correct ID
+
+      // Navigate to the ReadJournal route and pass the item as a parameter
+      router.push(`/ReadJournal/${item.id}`);
+    };
+
+    return (
+      <JournalItem
+        item={item}
+        deleteJournal={deleteJournal}
+        navigateToReadJournal={navigateToReadJournal}
+      />
+    );
   };
+
+
+  if (loading) {
+    return <ActivityIndicator className='flex-1 bg-[#141438]' color={'#fff'}  size={50}/>;
+  }
   return (
     <View className="flex-1 bg-[#141439]  items-center justify-center relative px-4">
       <View className="flex flex-col  ">
