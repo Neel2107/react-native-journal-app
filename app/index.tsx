@@ -8,35 +8,48 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { FIREBASE_DB } from "@/firebase";
 import JournalItem from "@/components/JournalItem/JournalItem";
+import { formatTimestamp } from "@/utils/HelperFunctions";
 
 export interface Journal {
   title: string;
   done: boolean;
   id: string;
-  time: string;
+  timestamp: string;
   date: string;
+  time: string;
 }
 const List = () => {
   const [journals, setJournals] = useState<Journal[]>([]);
+useEffect(() => {
+  const journalRef = collection(FIREBASE_DB, "journal");
+  // Update the orderBy clause to use the "timestamp" field
+  const q = query(journalRef, orderBy("timestamp", "desc"));
 
-  useEffect(() => {
-    const journalRef = collection(FIREBASE_DB, "journal");
-
-    const subscribe = onSnapshot(journalRef, {
-      next: (snapshot) => {
-        const journalsList: Journal[] = [];
-        snapshot.docs.forEach((doc) => {
-          journalsList.push({ ...doc.data(), id: doc.id } as Journal);
-        });
-        setJournals(journalsList);
-      },
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const journalsList: Journal[] = [];
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data() as Journal;
+      const { formattedDate, formattedTime } = formatTimestamp(data.timestamp);
+      journalsList.push({
+        ...data,
+        id: doc.id,
+        title: data.title,
+        date: formattedDate, // Now in DD/MM/YYYY
+        time: formattedTime, // Now in hh:mm AM/PM
+      });
     });
+    // Sorting is not needed anymore since Firestore is doing it already
+    setJournals(journalsList);
+  });
 
-    return () => subscribe();
-  }, []);
+  return () => unsubscribe();
+}, []);
+
+
+
   const renderItem = ({ item }: any) => {
     const ref = doc(FIREBASE_DB, "journal", item.id);
 

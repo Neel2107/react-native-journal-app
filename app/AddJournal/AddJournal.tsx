@@ -29,8 +29,7 @@ const AddJournal = () => {
     const doc = addDoc(collection(FIREBASE_DB, "journal"), {
       title: journalTitle,
       journal: journal,
-      time: currentTime,
-      date: todayDate,
+      timestamp: getTodaysDate()
     });
     route.back();
   };
