@@ -48,3 +48,6 @@ export const formatTimestamp = (timestamp: string) => {
     return { formattedDate, formattedTime };
   };
   
+export const moods = [
+  "😄","😉" ,"🥰","😐","🙁","😭","😠"
+]

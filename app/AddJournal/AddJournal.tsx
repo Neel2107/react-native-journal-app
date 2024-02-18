@@ -7,6 +7,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Button,
+  Touchable,
+  TouchableNativeFeedback,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
@@ -17,6 +19,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import { moods } from "@/utils/HelperFunctions";
+import { TouchableRipple } from "react-native-paper";
 
 const AddJournal = () => {
   const [journal, setJournal] = useState<string>("");
@@ -30,10 +40,11 @@ const AddJournal = () => {
   );
   const [year, setYear] = useState<string>(date.getFullYear().toString());
   const [selectedTime, setSelectedTime] = useState(formatTime(new Date()));
+  const [mood, setmood] = useState("😄");
 
   const route = useRouter();
   const insets = useSafeAreaInsets();
-  const onChange = (event, selectedValue) => {
+  const onChange = (selectedValue: any) => {
     setShow(Platform.OS === "ios");
     if (selectedValue) {
       const newValue = new Date(selectedValue);
@@ -49,18 +60,17 @@ const AddJournal = () => {
       }
     }
   };
-  
 
-function formatTime(date) {
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours || 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0' + minutes : minutes;
-  return `${hours}:${minutes} ${ampm}`;
-}
-  const showMode = (currentMode) => {
+  function formatTime(date: Date) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours || 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    return `${hours}:${minutes} ${ampm}`;
+  }
+  const showMode = (currentMode: string) => {
     setShow(true);
     setMode(currentMode);
   };
@@ -81,11 +91,17 @@ function formatTime(date) {
       className="bg-[#141438]"
     >
       <View className="flex flex-row px-4 items-center justify-between py-2">
-        <TouchableOpacity onPress={() => route.back()}>
+        <TouchableRipple
+          rippleColor="rgba(0, 0, 0, .32)"
+          borderless={true} // Use borderless for circular or irregular shapes
+          style={{ borderRadius: 50 }} // Match the rounded-full style
+          onPress={() => route.back()}
+        >
           <Ionicons name="close" size={24} color="#6d6db9" />
-        </TouchableOpacity>
+        </TouchableRipple>
 
-        <TouchableOpacity
+        <TouchableRipple
+          rippleColor="rgba(0, 0, 0, .32)"
           className="flex fl  justify-center items-center px-4  py-1 bg-[#9191ed]  rounded-md"
           disabled={journal === "" && journalTitle === ""}
           onPress={addJournal}
@@ -99,12 +115,12 @@ function formatTime(date) {
           >
             Add
           </Text>
-        </TouchableOpacity>
+        </TouchableRipple>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 flex-col items-center  ">
-          <View className="w-full flex flex-row items-center justify-between px-4">
+          <View className="w-full flex flex-row items-center justify-between px-4 py-2">
             <TouchableOpacity
               onPress={() => showMode("date")}
               className="flex flex-row items-baseline"
@@ -126,6 +142,38 @@ function formatTime(date) {
                 onChange={onChange}
               />
             )}
+            <Menu>
+              <MenuTrigger>
+                <View className="p-2 rounded-full bg-[#7676ae96]">
+                  <Text className="text-2xl">{mood}</Text>
+                </View>
+              </MenuTrigger>
+              <MenuOptions
+                optionsContainerStyle={{
+                  backgroundColor: "#30306f",
+                  padding: 8,
+                  borderRadius: 10,
+                }}
+              >
+                <View>
+                  <Text className="text-white pl-2 my-2 font-semibold">
+                    How's your day?
+                  </Text>
+                  <View className="flex flex-row  flex-wrap">
+                    {moods.map((mood, index) => (
+                      <MenuOption
+                        key={index}
+                        onSelect={() => setmood(mood)}
+                        text={mood}
+                        customStyles={{
+                          optionText: { fontSize: 25 },
+                        }}
+                      />
+                    ))}
+                  </View>
+                </View>
+              </MenuOptions>
+            </Menu>
           </View>
           <View className="w-full px-4 mt-5">
             <TextInput
@@ -137,7 +185,7 @@ function formatTime(date) {
               cursorColor={"white"}
             />
             <TextInput
-            multiline
+              multiline
               className="text-white w-full text-base  "
               placeholder="Write more here..."
               value={journal}
@@ -145,7 +193,6 @@ function formatTime(date) {
               placeholderTextColor={"#4e4e7c"}
               cursorColor={"white"}
             />
-            
           </View>
 
           <View className=" flex flex-col  w-full px-4 mt-auto">
@@ -161,7 +208,7 @@ function formatTime(date) {
                   className="flex flex-row  items-center"
                 >
                   <Text className="text-[#e5e1ff]  font-semibold ">
-                  {selectedTime}
+                    {selectedTime}
                   </Text>
                   <Entypo name="chevron-right" size={15} color="#e5e1ff" />
                 </TouchableOpacity>

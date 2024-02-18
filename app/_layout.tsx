@@ -13,6 +13,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import Navbar from "@/components/Navbar/Navbar";
 import BottomBar from "@/components/BottomBar/BottomBar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { MenuProvider } from "react-native-popup-menu";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -47,11 +48,15 @@ function RootLayoutNav() {
 
   return (
     <GestureHandlerRootView className="flex-1">
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Navbar />
-        <Slot />
-        <BottomBar />
-      </ThemeProvider>
-     </GestureHandlerRootView>
+      <MenuProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Navbar />
+          <Slot />
+          <BottomBar />
+        </ThemeProvider>
+      </MenuProvider>
+    </GestureHandlerRootView>
   );
 }

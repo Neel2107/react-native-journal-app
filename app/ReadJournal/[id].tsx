@@ -6,6 +6,13 @@ import { FIREBASE_DB } from "@/firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Entypo } from "@expo/vector-icons";
+import { ScrollView } from "react-native-gesture-handler";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 type JournalType = {
   id: string;
@@ -79,16 +86,40 @@ const ReadJournal = () => {
           </Text>
         </View>
         <View className=" flex flex-row items-center">
-          <Entypo name="dots-three-vertical" size={17} color="#e5e1ff" />
-
-          <Text className="text-sm  text-[#e5e1ff]"></Text>
+          <Menu>
+            <MenuTrigger>
+              <Entypo name="dots-three-vertical" size={17} color="#e5e1ff" />
+            </MenuTrigger>
+            <MenuOptions
+              optionsContainerStyle={{
+                backgroundColor: "#30306f",
+                padding: 5,
+                borderRadius: 10,
+              }}
+            >
+              <MenuOption
+                onSelect={() => alert(`Save`)}
+                text="Save"
+                customStyles={{
+                  optionText: { color: "white", fontSize: 15 },
+                }}
+              />
+              <MenuOption onSelect={() => alert(`Delete`)}>
+                <Text style={{ color: "red" }}>Delete</Text>
+              </MenuOption>
+            </MenuOptions>
+          </Menu>
         </View>
       </View>
-      <View className="flex-1  bg-[#141438] px-4 py-2">
-        <Text className="text-xl font-bold text-[#e5e1ff]">
+      <View className="flex-1  bg-[#141439] px-4 py-2">
+        <Text className="text-xl font-bold text-[#f0f0f0]">
           {journal?.title}
         </Text>
-        <Text className="text-[#e5e1ff] text-sm my-2">{journal?.journal}</Text>
+        <ScrollView>
+          <Text className="text-[#f0f0f0] text-sm my-2">
+            {journal?.journal}
+          </Text>
+        </ScrollView>
       </View>
     </View>
   );
