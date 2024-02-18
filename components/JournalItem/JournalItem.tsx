@@ -1,44 +1,79 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, Vibration } from "react-native";
+import React, { useState } from "react";
 import { truncateText } from "@/utils/HelperFunctions";
-import { useRouter } from "expo-router";
-
-
-// Define a more comprehensive type for the component props
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
+import { MaterialIcons } from '@expo/vector-icons';
 interface JournalItemProps {
   item: {
     title: string;
-    id: string; // Include 'id' in your type definition to avoid TypeScript errors,
+    id: string;
     time: string;
     date: string;
-    
   };
-  deleteJournal: () => void; // Correctly include deleteJournal as a function prop
+  deleteJournal: () => void;
+  navigateToReadJournal: () => void;
 }
 
-const JournalItem: React.FC<JournalItemProps> = ({ item, deleteJournal,navigateToReadJournal }) => {
+const JournalItem: React.FC<JournalItemProps> = ({
+  item,
+  deleteJournal,
+  navigateToReadJournal,
+}) => {
+  const [isSelected, setIsSelected] = useState(false); // State to track selection
 
-  
-  const route = useRouter()
+  const handleLongPress = () => {
+    console.log("Long Pressed");
+    Vibration.vibrate(17);
+    setIsSelected(!isSelected); // Toggle selection state
+  };
+
+  const longPressGesture = Gesture.LongPress()
+    .minDuration(600)
+    .onStart(() => {
+      console.log("Long Pressed inside gesture");
+      runOnJS(handleLongPress)();
+    });
+
+  const journalItemClick = () => {
+    if (isSelected) {
+      setIsSelected(false);
+    } else {
+      navigateToReadJournal();
+    }
+  };
+
   return (
-    <TouchableOpacity  onPress={navigateToReadJournal}className="flex flex-row w-full  justify-between items-center px-4   py-4 bg-[#282854] my-2 rounded-lg">
-      <View className="flex flex-col  ">
-        <Text className="text-[#e5e1ff] mb-2 text-lg font-semibold">
-          {truncateText(item.title, 30)}
-        </Text>
+    <GestureDetector gesture={longPressGesture}>
+      <TouchableOpacity
+        activeOpacity={0.4}
+        onPress={() => {
+          journalItemClick();
+        }}
+        className={`flex flex-row w-full  justify-between items-center px-4   py-4 ${
+          isSelected ? "bg-[#585891]" : "bg-[#282854]"
+        }  my-2 rounded-lg`}
+      >
+        <View className="flex flex-col  ">
+          <Text className="text-[#e5e1ff] mb-2 text-lg font-semibold">
+            {truncateText(item.title, 30)}
+          </Text>
 
-        <View className="flex flex-row  ">
-          <Text className="text-[#6d6db9] text-xs">{item.date}</Text>
-          <Text className="text-[#6d6db9] text-xs ml-2">{item.time}</Text>
+          <View className="flex flex-row  ">
+            <Text className="text-[#6d6db9] text-xs">{item.date}</Text>
+            <Text className="text-[#6d6db9] text-xs ml-2">{item.time}</Text>
+          </View>
         </View>
-      </View>
-      <View className="flex flex-row items-center ">
-        <Text className="text-[#e5e1ff] font-semibold "></Text>
-        <TouchableOpacity onPress={() => deleteJournal()}>
-          <Text className="text-[#ffc8c8] font-semibold ">Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+        <View className="flex flex-row items-center ">
+          {isSelected && (
+            <TouchableOpacity onPress={() => deleteJournal()}>
+              <MaterialIcons name="delete-outline" size={24} color="#ffc8c8" />
+              {/* <Text className="text-[#ffc8c8] font-semibold ">Delete</Text> */}
+            </TouchableOpacity>
+          )}
+        </View>
+      </TouchableOpacity>
+    </GestureDetector>
   );
 };
 

@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Vibration,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -74,6 +75,7 @@ const List = () => {
     };
 
     const navigateToReadJournal = () => {
+      Vibration.vibrate(11);
       console.log("Journal ID being passed:", item.id); // This should log the correct ID
 
       // Navigate to the ReadJournal route and pass the item as a parameter
