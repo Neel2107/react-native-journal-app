@@ -21,6 +21,7 @@ import { FIREBASE_DB } from "@/firebase";
 import JournalItem from "@/components/JournalItem/JournalItem";
 import { formatTimestamp } from "@/utils/HelperFunctions";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface Journal {
   title: string;
@@ -87,14 +88,23 @@ const List = () => {
       />
     );
   };
+  const insets = useSafeAreaInsets();
 
 
   if (loading) {
     return <ActivityIndicator className='flex-1 bg-[#141438]' color={'#fff'}  size={50}/>;
   }
   return (
-    <View className="flex-1 bg-[#141439]  items-center justify-center relative px-4">
-      <View className="flex flex-col  ">
+    <>
+    <View
+   style={{ paddingTop: insets.top }}
+   className="flex flex-row px-4 justify-between items-center  py-2 bg-[#21215b]"
+   >
+
+      <Text className="text-2xl font-bold text-[#e5e1ff]">Home</Text>
+    </View>
+    <View className="flex-1 bg-[#141439]  items-center justify-center relative py-2 px-4">
+      <View className="flex flex-col   ">
         <FlatList
           data={journals}
           renderItem={renderItem}
@@ -109,6 +119,8 @@ const List = () => {
             </View>
           )}
           keyExtractor={(journal: Journal) => journal.id}
+          contentContainerStyle={{ paddingBottom: 50 }} // Add extra space at the bottom
+
         />
       </View>
       {/* bottom gradient */}
@@ -121,6 +133,7 @@ const List = () => {
         />
       </View>
     </View>
+    </>
   );
 };
 
