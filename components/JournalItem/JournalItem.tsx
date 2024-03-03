@@ -52,11 +52,10 @@ const JournalItem: React.FC<JournalItemProps> = ({
         }}
         rippleColor="rgba(0, 0, 0, .40)"
         borderless={true} // Use borderless for circular or irregular shapes
+        className={`${isSelected ? "bg-[#585891]" : "bg-[#282854]"} rounded-lg px-4   py-4   my-2 mx-4 `}
       >
         <View
-          className={`flex flex-row w-full  justify-between items-center px-4   py-4 ${
-            isSelected ? "bg-[#585891]" : "bg-[#282854]"
-          }  my-2 rounded-lg`}
+          className={`flex flex-row w-full  justify-between items-center  `}
         >
           <View className="flex flex-col  ">
             <Text className="text-[#e5e1ff] mb-2 text-lg font-semibold">

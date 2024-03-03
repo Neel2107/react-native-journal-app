@@ -44,24 +44,26 @@ const AddJournal = () => {
 
   const route = useRouter();
   const insets = useSafeAreaInsets();
-  const onChange = (selectedValue: any) => {
+
+  const onChange = (event, selectedValue) => {
     setShow(Platform.OS === "ios");
     if (selectedValue) {
-      const newValue = new Date(selectedValue);
+      const currentDate = selectedValue || date; // Fallback to current date if undefined
+      setDate(currentDate);
+
       if (mode === "date") {
         // Date has been selected, update the date and its components
-        setDate(newValue);
-        setDay(newValue.getDate().toString());
-        setMonth(newValue.toLocaleString("default", { month: "short" }));
-        setYear(newValue.getFullYear().toString());
+        setDay(currentDate.getDate().toString());
+        setMonth(currentDate.toLocaleString("default", { month: "short" }));
+        setYear(currentDate.getFullYear().toString());
       } else if (mode === "time") {
         // Time has been selected, update the time component
-        setSelectedTime(formatTime(newValue));
+        setSelectedTime(formatTime(currentDate));
       }
     }
   };
 
-  function formatTime(date: Date) {
+  function formatTime(date) {
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
@@ -70,7 +72,8 @@ const AddJournal = () => {
     minutes = minutes < 10 ? "0" + minutes : minutes;
     return `${hours}:${minutes} ${ampm}`;
   }
-  const showMode = (currentMode: string) => {
+
+  const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
   };

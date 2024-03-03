@@ -12,15 +12,18 @@ const BottomBar = () => {
       {!path.includes("AddJournal") && (
         <TouchableRipple
           rippleColor="rgba(0, 0, 0, .40)"
-          className=" rounded-full p-3 bg-[#9191ed]"
+          borderless
+          className=" rounded-full"
           onPress={() => route.push("/AddJournal/AddJournal")}
         >
-          <AntDesign
-            name="plus"
-            className="font-bold"
-            size={30}
-            color="black"
-          />
+          <View className=" p-3 bg-[#9191ed] rounded-full">
+            <AntDesign
+              name="plus"
+              className="font-bold"
+              size={30}
+              color="black"
+            />
+          </View>
         </TouchableRipple>
       )}
     </View>
