@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-todo",
-    "slug": "expo-todo",
+    "name": "my-journal",
+    "slug": "my-journal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.neel1100.myjournal"
     },
     "web": {
       "bundler": "metro",
