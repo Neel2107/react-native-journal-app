@@ -29,25 +29,29 @@ export function getTodaysDate(): string {
   return now.toISOString();
 }
 export const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const yesterday = new Date(now.setDate(now.getDate() - 1));
-    now.setDate(now.getDate() + 1); // Reset to today's date
-  
-    // Format date as 'Today' or 'Yesterday' if applicable, otherwise as DD/MM/YYYY
-    let formattedDate;
-    if (date.toDateString() === now.toDateString()) {
-      formattedDate = 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      formattedDate = 'Yesterday';
-    } else {
-      formattedDate = date.toLocaleDateString('en-GB');
-    }
-  
-    const formattedTime = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase();
-    return { formattedDate, formattedTime };
-  };
-  
-export const moods = [
-  "😄","😉" ,"🥰","😐","🙁","😭","😠"
-]
+  const date = new Date(timestamp);
+  const now = new Date();
+  const yesterday = new Date(now.setDate(now.getDate() - 1));
+  now.setDate(now.getDate() + 1); // Reset to today's date
+
+  // Format date as 'Today' or 'Yesterday' if applicable, otherwise as DD/MM/YYYY
+  let formattedDate;
+  if (date.toDateString() === now.toDateString()) {
+    formattedDate = "Today";
+  } else if (date.toDateString() === yesterday.toDateString()) {
+    formattedDate = "Yesterday";
+  } else {
+    formattedDate = date.toLocaleDateString("en-GB");
+  }
+
+  const formattedTime = date
+    .toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .toUpperCase();
+  return { formattedDate, formattedTime };
+};
+
+export const moods = [1, 2, 3, 4, 5, 6, 7];

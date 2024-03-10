@@ -13,11 +13,12 @@ import {
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { supabase } from "@/utils/supabase";
 
 type JournalType = {
   id: string;
-  title: string;
-  journal: string;
+  post_title: string;
+  post_content: string;
 };
 
 const ReadJournal = () => {
@@ -27,34 +28,48 @@ const ReadJournal = () => {
   const route = useRouter();
   const insets = useSafeAreaInsets();
 
+  
+
   useEffect(() => {
     const fetchJournal = async () => {
-      // Extract the journal ID from the router path
+      setLoading(true); // Assuming you have a setLoading function to indicate loading state
+  
       const segments = pathName.split("/"); // Split pathName into segments
       const journalId = segments[segments.length - 1]; // Assuming the last segment is the journalId
       console.log("Journal ID extracted:", journalId);
-
+  
       if (journalId) {
         try {
-          const docRef = doc(FIREBASE_DB, "journal", journalId);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setJournal({ id: docSnap.id, ...docSnap.data() } as JournalType);
+          const { data, error } = await supabase
+            .from("posts") // Replace "journals" with your Supabase table name
+            .select("*")
+            .eq('id', journalId) // Ensure 'id' matches your column name for the journal ID
+            .single(); // Retrieves a single item
+  
+          if (error) {
+            throw error;
+          }
+  
+          if (data) {
+            // Assuming data structure matches your JournalType
+            setJournal({ id: data.id, ...data } as JournalType);
           } else {
             console.log(`No such document with ID ${journalId}!`);
           }
-        } catch (error) {
+        } catch (error:any) {
           console.error("Error fetching journal:", error);
-          alert(`Error fetching journal: ${(error as any).message}`);
+          alert(`Error fetching journal: ${error.message || error}`);
         }
       }
-
+  
       setLoading(false);
     };
-
+  
     fetchJournal();
   }, [pathName]);
+
+  console.log(`Journal fetched:`, journal);
+  
 
   if (loading) {
     return (
@@ -113,11 +128,11 @@ const ReadJournal = () => {
       </View>
       <View className="flex-1  bg-[#141439] px-4 py-2">
         <Text className="text-xl font-bold text-[#f0f0f0]">
-          {journal?.title}
+          {journal?.post_title}
         </Text>
         <ScrollView>
           <Text className="text-[#f0f0f0] text-sm my-2">
-            {journal?.journal}
+            {journal?.post_content}
           </Text>
         </ScrollView>
       </View>

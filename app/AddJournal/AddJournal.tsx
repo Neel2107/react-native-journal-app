@@ -27,6 +27,7 @@ import {
 } from "react-native-popup-menu";
 import { moods } from "@/utils/HelperFunctions";
 import { TouchableRipple } from "react-native-paper";
+import { createJournal } from "@/utils/postHelpers";
 
 const AddJournal = () => {
   const [journal, setJournal] = useState<string>("");
@@ -40,12 +41,12 @@ const AddJournal = () => {
   );
   const [year, setYear] = useState<string>(date.getFullYear().toString());
   const [selectedTime, setSelectedTime] = useState(formatTime(new Date()));
-  const [mood, setmood] = useState("😄");
+  const [mood, setmood] = useState(1);
 
   const route = useRouter();
   const insets = useSafeAreaInsets();
 
-  const onChange = (event, selectedValue) => {
+  const onChange = (event:any, selectedValue:any) => {
     setShow(Platform.OS === "ios");
     if (selectedValue) {
       const currentDate = selectedValue || date; // Fallback to current date if undefined
@@ -79,11 +80,14 @@ const AddJournal = () => {
   };
 
   const addJournal = async () => {
-    const doc = addDoc(collection(FIREBASE_DB, "journal"), {
-      title: journalTitle,
-      journal: journal,
-      timestamp: date.toISOString(),
-    });
+    // const doc = addDoc(collection(FIREBASE_DB, "journal"), {
+    //   title: journalTitle,
+    //   journal: journal,
+    //   timestamp: date.toISOString(),
+    // });
+    console.log("date with iso string", date.toISOString());
+    console.log("date without iso string", date);
+    await  createJournal( date, journalTitle, journal, mood);
     route.back();
   };
 
@@ -167,7 +171,7 @@ const AddJournal = () => {
                       <MenuOption
                         key={index}
                         onSelect={() => setmood(mood)}
-                        text={mood}
+                        text={mood.toString()}
                         customStyles={{
                           optionText: { fontSize: 25 },
                         }}

@@ -28,6 +28,7 @@ import { Searchbar, TouchableRipple } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { AntDesign } from "@expo/vector-icons";
 import Animated, { FadeInLeft, FadeOutLeft } from "react-native-reanimated";
+import { getPosts } from "@/utils/postHelpers";
 
 export interface Journal {
   title: string;
@@ -48,33 +49,37 @@ const List = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredJournals, setFilteredJournals] = useState<Journal[]>([]); // Add this line
 
+
   useEffect(() => {
-    const journalRef = collection(FIREBASE_DB, "journal");
-    // Update the orderBy clause to use the "timestamp" field
-    const q = query(journalRef, orderBy("timestamp", "desc"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const journalsList: Journal[] = [];
-      snapshot.docs.forEach((doc) => {
-        const data = doc.data() as Journal;
-        const { formattedDate, formattedTime } = formatTimestamp(
-          data.timestamp
-        );
-        journalsList.push({
-          ...data,
-          id: doc.id,
-          title: data.title,
-          date: formattedDate, // Now in DD/MM/YYYY
-          time: formattedTime, // Now in hh:mm AM/PM
+    const fetchJournals = async () => {
+      setLoading(true); // Assuming you have a setLoading state updater
+      try {
+        const journalsList = await getPosts();
+        const formattedJournals = journalsList.map((journal) => {
+        
+          const { formattedDate, formattedTime } = formatTimestamp(
+            journal.created_at
+          );
+          return {
+            id: journal.id,
+            title: journal.post_title,
+            content: journal.post_content,
+            mood: journal.post_mood,
+            date: formattedDate, // Formatted date
+            time: formattedTime, // Formatted time
+          };
         });
-      });
-      // Sorting is not needed anymore since Firestore is doing it already
-      setJournals(journalsList);
-      setLoading(false); // Set loading to false once data is fetched
-    });
-
-    return () => unsubscribe();
+        setJournals(formattedJournals); // Assuming you have a setJournals state updater
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched or if there's an error
+      }
+    };
+  
+    fetchJournals();
   }, []);
+  
 
   const router = useRouter();
 
