@@ -6,12 +6,14 @@ export const createJournal = async (
   post_content: string,
   post_mood: string
 ): Promise<any> => {
+
+  console.log("date", date, "post_title", post_title, "post_content", post_content, "post_mood", post_mood);
   const { data, error } = await supabase.from("posts").insert([
     {
-      created_at: date,
-      post_title: post_title,
-      post_content: post_content,
-      post_mood: post_mood,
+      journal_date: date,
+      journal_title: post_title,
+      journal_content: post_content,
+      journal_mood: post_mood,
     },
   ]);
 
@@ -29,7 +31,7 @@ export const getPosts = async () => {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
-    .order("created_at", { ascending: false }); 
+    .order("journal_date", { ascending: false }); 
 
   if (error) {
     console.error(error);
@@ -37,3 +39,18 @@ export const getPosts = async () => {
   }
   return data;
 };
+
+
+
+export const deleteJoural = async (id: string) => {
+  console.log("deleting id", id);
+  const { data, error } = await supabase
+    .from("posts")
+    .delete()
+    .eq("id", id);
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+  return data;
+}

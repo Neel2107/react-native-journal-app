@@ -17,8 +17,8 @@ import { supabase } from "@/utils/supabase";
 
 type JournalType = {
   id: string;
-  post_title: string;
-  post_content: string;
+  journal_title: string;
+  journal_content: string;
 };
 
 const ReadJournal = () => {
@@ -113,8 +113,8 @@ const ReadJournal = () => {
               }}
             >
               <MenuOption
-                onSelect={() => alert(`Save`)}
-                text="Save"
+                onSelect={() => route.push(`/EditJournal/${journal?.id}`)}
+                text="Edit"
                 customStyles={{
                   optionText: { color: "white", fontSize: 15 },
                 }}
@@ -128,11 +128,11 @@ const ReadJournal = () => {
       </View>
       <View className="flex-1  bg-[#141439] px-4 py-2">
         <Text className="text-xl font-bold text-[#f0f0f0]">
-          {journal?.post_title}
+          {journal?.journal_title}
         </Text>
         <ScrollView>
           <Text className="text-[#f0f0f0] text-sm my-2">
-            {journal?.post_content}
+            {journal?.journal_content}
           </Text>
         </ScrollView>
       </View>

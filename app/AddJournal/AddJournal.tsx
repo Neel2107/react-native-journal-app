@@ -41,12 +41,16 @@ const AddJournal = () => {
   );
   const [year, setYear] = useState<string>(date.getFullYear().toString());
   const [selectedTime, setSelectedTime] = useState(formatTime(new Date()));
-  const [mood, setmood] = useState(1);
+  const [mood, setMood] = useState(moods[0]);
 
   const route = useRouter();
   const insets = useSafeAreaInsets();
 
-  const onChange = (event:any, selectedValue:any) => {
+  const handleSelectMood = (moodObject) => {
+    setMood(moodObject);
+  };
+
+  const onChange = (event: any, selectedValue: any) => {
     setShow(Platform.OS === "ios");
     if (selectedValue) {
       const currentDate = selectedValue || date; // Fallback to current date if undefined
@@ -64,7 +68,7 @@ const AddJournal = () => {
     }
   };
 
-  function formatTime(date) {
+  function formatTime(date: any) {
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
@@ -74,20 +78,33 @@ const AddJournal = () => {
     return `${hours}:${minutes} ${ampm}`;
   }
 
-  const showMode = (currentMode) => {
+  const showMode = (currentMode: any) => {
     setShow(true);
     setMode(currentMode);
   };
 
+  const formatDateWithTimezone = (date: any) => {
+    const timeZoneOffset = -date.getTimezoneOffset();
+    const diff = timeZoneOffset >= 0 ? "+" : "-";
+    const pad = (n: any) => (n < 10 ? "0" + n : n);
+    const offset = Math.abs(timeZoneOffset);
+    const hoursOffset = Math.floor(offset / 60);
+    const minutesOffset = offset % 60;
+
+    // Format the date and time with timezone offset
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+      date.getSeconds()
+    )}${diff}${pad(hoursOffset)}:${pad(minutesOffset)}`;
+  };
+
   const addJournal = async () => {
-    // const doc = addDoc(collection(FIREBASE_DB, "journal"), {
-    //   title: journalTitle,
-    //   journal: journal,
-    //   timestamp: date.toISOString(),
-    // });
-    console.log("date with iso string", date.toISOString());
-    console.log("date without iso string", date);
-    await  createJournal( date, journalTitle, journal, mood);
+    const timestamp = formatDateWithTimezone(date); // Format date with local timezone
+    console.log("Formatted Date String:", timestamp);
+    const moodID = mood.id;
+
+    await createJournal(timestamp, journalTitle, journal, moodID);
     route.back();
   };
 
@@ -152,7 +169,7 @@ const AddJournal = () => {
             <Menu>
               <MenuTrigger>
                 <View className="p-2 rounded-full bg-[#7676ae96]">
-                  <Text className="text-2xl">{mood}</Text>
+                  <Text className="text-2xl">{mood.emoji}</Text>
                 </View>
               </MenuTrigger>
               <MenuOptions
@@ -170,8 +187,8 @@ const AddJournal = () => {
                     {moods.map((mood, index) => (
                       <MenuOption
                         key={index}
-                        onSelect={() => setmood(mood)}
-                        text={mood.toString()}
+                        onSelect={() => handleSelectMood(mood)}
+                        text={mood.emoji}
                         customStyles={{
                           optionText: { fontSize: 25 },
                         }}

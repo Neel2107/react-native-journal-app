@@ -54,4 +54,12 @@ export const formatTimestamp = (timestamp: string) => {
   return { formattedDate, formattedTime };
 };
 
-export const moods = [1, 2, 3, 4, 5, 6, 7];
+export const moods = [
+  { id: 1, emoji: "😭" },
+  { id: 2, emoji: "😢" },
+  { id: 3, emoji: "😕" },
+  { id: 4, emoji: "😐" },
+  { id: 5, emoji: "🙂" },
+  { id: 6, emoji: "😀" },
+  { id: 7, emoji: "😁" }
+];
