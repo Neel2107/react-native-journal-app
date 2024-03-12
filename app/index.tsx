@@ -63,10 +63,7 @@ const List = () => {
   }, []);
 
   const sortJournals = (journals: any) => {
-    console.log(
-      "Sorting journals based on sortOption and sorting_date",
-      journals
-    );
+    
     return [...journals].sort((a, b) => {
       // Parsing the sorting_date field to get time in milliseconds for comparison
       const dateA = new Date(a.sorting_date).getTime();
@@ -130,7 +127,7 @@ const List = () => {
   }, [journals, searchQuery]);
 
   const renderItem = ({ item }: { item: Journal }) => {
-    console.log(item.id);
+   
     const deleteJournal = async () => {
       try {
         await deleteJoural(item.id);

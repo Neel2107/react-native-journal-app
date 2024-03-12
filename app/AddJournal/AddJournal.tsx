@@ -6,14 +6,10 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Button,
-  Touchable,
-  TouchableNativeFeedback,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
-import { FIREBASE_DB } from "@/firebase";
-import { addDoc, collection } from "firebase/firestore";
+
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -32,7 +28,7 @@ import { createJournal } from "@/utils/postHelpers";
 const AddJournal = () => {
   const [journal, setJournal] = useState<string>("");
   const [journalTitle, setJournalTitle] = useState<string>("");
-  const [date, setDate] = useState(new Date()); // Initialize to current date
+  const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<string>("date");
   const [show, setShow] = useState<Boolean>(false);
   const [day, setDay] = useState<string>(date.getDate().toString());
@@ -46,7 +42,7 @@ const AddJournal = () => {
   const route = useRouter();
   const insets = useSafeAreaInsets();
 
-  const handleSelectMood = (moodObject) => {
+  const handleSelectMood = (moodObject: any) => {
     setMood(moodObject);
   };
 
@@ -101,7 +97,7 @@ const AddJournal = () => {
 
   const addJournal = async () => {
     const timestamp = formatDateWithTimezone(date); // Format date with local timezone
-    console.log("Formatted Date String:", timestamp);
+   
     const moodID = mood.id;
 
     await createJournal(timestamp, journalTitle, journal, moodID);
@@ -117,8 +113,8 @@ const AddJournal = () => {
       <View className="flex flex-row px-4 items-center justify-between py-2">
         <TouchableRipple
           rippleColor="rgba(0, 0, 0, .32)"
-          borderless={true} // Use borderless for circular or irregular shapes
-          style={{ borderRadius: 50 }} // Match the rounded-full style
+          borderless={true}
+          style={{ borderRadius: 50 }}
           onPress={() => route.back()}
         >
           <Ionicons name="close" size={24} color="#6d6db9" />
