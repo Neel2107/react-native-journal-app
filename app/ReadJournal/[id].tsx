@@ -14,6 +14,7 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { supabase } from "@/utils/supabase";
+import { deleteJoural } from "@/utils/postHelpers";
 
 type JournalType = {
   id: string;
@@ -30,9 +31,9 @@ const ReadJournal = () => {
 
   useEffect(() => {
     const fetchJournal = async () => {
-      setLoading(true); // Assuming you have a setLoading function to indicate loading state
+      setLoading(true); 
 
-      const segments = pathName.split("/"); // Split pathName into segments
+      const segments = pathName.split("/"); 
       const journalId = segments[segments.length - 1]; // Assuming the last segment is the journalId
       console.log("Journal ID extracted:", journalId);
 
@@ -66,17 +67,13 @@ const ReadJournal = () => {
     fetchJournal();
   }, [pathName]);
 
-  console.log(`Journal fetched:`, journal);
-
-  if (loading) {
-    return (
-      <ActivityIndicator
-        className="flex-1 bg-[#141438]"
-        color={"#fff"}
-        size={50}
-      />
-    );
+  
+  const deleteJournal = async () => {
+    await deleteJoural(journal?.id as any);
+    route.back()
   }
+
+ 
 
   if (!journal) {
     return (
@@ -127,14 +124,22 @@ const ReadJournal = () => {
                   optionText: { color: "white", fontSize: 15 },
                 }}
               />
-              <MenuOption onSelect={() => alert(`Delete`)}>
+              <MenuOption onSelect={ deleteJournal}>
                 <Text style={{ color: "red" }}>Delete</Text>
               </MenuOption>
             </MenuOptions>
           </Menu>
         </View>
       </View>
-      <View className="flex-1  bg-[#141439] px-4 py-2">
+
+    {loading ?
+      <ActivityIndicator
+        className="flex-1 bg-[#141438]"
+        color={"#fff"}
+        size={50}
+      />
+    :
+    <View className="flex-1  bg-[#141439] px-4 py-2">
         <Text className="text-xl font-bold text-[#f0f0f0]">
           {journal?.journal_title}
         </Text>
@@ -143,7 +148,7 @@ const ReadJournal = () => {
             {journal?.journal_content}
           </Text>
         </ScrollView>
-      </View>
+      </View>}
     </View>
   );
 };

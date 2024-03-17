@@ -16,6 +16,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-community/datetimepicker": "^7.6.1",
+    "@react-native-google-signin/google-signin": "^11.0.0",
     "@react-navigation/native": "^6.1.9",
     "@supabase/realtime-js": "^2.9.3",
     "@supabase/supabase-js": "^2.39.7",

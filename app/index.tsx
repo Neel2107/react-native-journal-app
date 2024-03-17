@@ -3,8 +3,6 @@ import {
   FlatList,
   Image,
   RefreshControl,
-  ScrollView,
-  StyleSheet,
   Text,
   Vibration,
   View,
@@ -38,6 +36,7 @@ export interface Journal {
   time: string;
 }
 const List = () => {
+
   const [journals, setJournals] = useState<Journal[]>([]);
   const [loading, setLoading] = useState<boolean>(true); // Add a loading state
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(
@@ -46,8 +45,8 @@ const List = () => {
 
   const [isSearchEnabled, setisSearchEnabled] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredJournals, setFilteredJournals] = useState<Journal[]>([]); // Add this line
-  const [sortOption, setSortOption] = useState<number>(1); // Default to "Recent"
+  const [filteredJournals, setFilteredJournals] = useState<Journal[]>([]); 
+  const [sortOption, setSortOption] = useState<number>(1); 
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const onRefresh = React.useCallback(() => {
@@ -155,15 +154,6 @@ const List = () => {
   };
   const insets = useSafeAreaInsets();
 
-  // if (loading) {
-  //   return (
-  //     <ActivityIndicator
-  //       className="flex-1 bg-[#141438]"
-  //       color={"#fff"}
-  //       size={50}
-  //     />
-  //   );
-  // }
   return (
     <View className="flex-1 bg-[#141438]">
       <View
@@ -174,22 +164,25 @@ const List = () => {
         {isSearchEnabled ? (
           <>
             <Searchbar
-              placeholder="Search"
-              onChangeText={setSearchQuery}
-              value={searchQuery}
               className={
                 "bg-transparent border border-[#9191ed] w-[90%]  text-[#e5e1ff] "
               }
+              placeholder="Search"
+              onChangeText={(text) => setSearchQuery(text)}
+              value={searchQuery}
               iconColor="#e5e1ff"
               inputStyle={{
                 color: "#e5e1ff",
                 width: "100%",
-
+                paddingTop: 0, // reduce top padding
+                paddingBottom: 20, // reduce bottom padding
+                paddingRight: 10,
                 height: "100%", // Match the height of the Searchbar
               }}
               placeholderTextColor={"#e5e1ff"}
               style={{
-                height: "100%",
+                height: 40, // adjust height as needed
+                
               }}
               theme={{
                 colors: {
