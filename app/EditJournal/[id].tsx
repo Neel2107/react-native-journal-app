@@ -23,11 +23,11 @@ import {
 } from "react-native-popup-menu";
 import { moods } from "@/utils/HelperFunctions";
 import { TouchableRipple } from "react-native-paper";
-import { createJournal } from "@/utils/postHelpers";
+import { createJournal, getJournal, updateJournal } from "@/utils/postHelpers";
 
 const EditJournal = () => {
   const params = useLocalSearchParams();
-  const [journal, setJournal] = useState<string>(params.journalTitle || "");
+  const [journal, setJournal] = useState<string>("");
   const [journalTitle, setJournalTitle] = useState<string>("");
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<string>("date");
@@ -42,7 +42,6 @@ const EditJournal = () => {
 
   const route = useRouter();
   const insets = useSafeAreaInsets();
-  console.log("params", params);
 
   const handleSelectMood = (moodObject: any) => {
     setMood(moodObject);
@@ -97,14 +96,27 @@ const EditJournal = () => {
     )}${diff}${pad(hoursOffset)}:${pad(minutesOffset)}`;
   };
 
-  const addJournal = async () => {
-    const timestamp = formatDateWithTimezone(date); // Format date with local timezone
-   
-    const moodID = mood.id;
+  
 
-    await createJournal(timestamp, journalTitle, journal, moodID);
-    route.back();
+  const editJournal =  async() => {
+    const timestamp = formatDateWithTimezone(date);
+    const journalId = params.id;
+    const moodID = mood.id;
+    await updateJournal(journalId, timestamp, journalTitle, journal, moodID);
+    route.back(); 
+  }
+
+  const fetchJournal = async () => {
+    const journalId = params.id;
+    const  data = await getJournal(journalId as string);
+    setJournal(data.journal_content);
+    setJournalTitle(data.journal_title);
+    setMood(moods.find((mood) => mood.id === data.journal_mood));
   };
+
+  useEffect(() => {
+    fetchJournal();
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -126,7 +138,7 @@ const EditJournal = () => {
           rippleColor="rgba(0, 0, 0, .32)"
           className="flex fl  justify-center items-center px-4  py-1 bg-[#9191ed]  rounded-md"
           disabled={journal === "" && journalTitle === ""}
-          onPress={addJournal}
+          onPress={editJournal}
         >
           <Text
             className={`text-base font-semibold ${

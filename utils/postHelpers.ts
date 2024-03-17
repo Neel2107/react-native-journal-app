@@ -24,6 +24,49 @@ export const createJournal = async (
   return data;
 };
 
+export const getJournal = async (id: string) => {
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+  return data;
+}
+
+
+//write updateJournal function here
+export const updateJournal = async (
+  id: string,
+  date: string,
+  post_title: string,
+  post_content: string,
+  post_mood: string
+): Promise<any> => {
+  const { data, error } = await supabase
+    .from("posts")
+    .update({
+      journal_date: date,
+      journal_title: post_title,
+      journal_content: post_content,
+      journal_mood: post_mood,
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+  return data;
+};
+
+
+
 //recent, oldest, a-z or z-a
 
 // postHelpers.ts
