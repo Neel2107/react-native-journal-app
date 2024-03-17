@@ -9,7 +9,7 @@ const BottomBar = () => {
   const path = usePathname();
   return (
     <View className="absolute bottom-0 flex-row justify-center w-full pb-3">
-      {!path.includes("AddJournal") && (
+      {!path.includes("AddJournal" ) && !path.includes("EditJournal") && (
         <TouchableRipple
           rippleColor="rgba(0, 0, 0, .40)"
           borderless

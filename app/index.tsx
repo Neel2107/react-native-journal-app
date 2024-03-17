@@ -311,7 +311,7 @@ const List = () => {
                   </View>
                 )}
                 keyExtractor={(journal: Journal) => journal.id}
-                contentContainerStyle={{ paddingBottom: 100 }} // Add extra space at the bottom
+                contentContainerStyle={{ paddingBottom: 100 }} 
               />
             </View>
             {/* bottom gradient */}
