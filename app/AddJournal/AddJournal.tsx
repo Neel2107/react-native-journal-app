@@ -24,6 +24,7 @@ import {
 import { moods } from "@/utils/HelperFunctions";
 import { TouchableRipple } from "react-native-paper";
 import { createJournal } from "@/utils/postHelpers";
+import Animated, { SlideInLeft, SlideInRight, SlideOutLeft, SlideOutRight } from "react-native-reanimated";
 
 const AddJournal = () => {
   const [journal, setJournal] = useState<string>("");
@@ -103,8 +104,12 @@ const AddJournal = () => {
     await createJournal(timestamp, journalTitle, journal, moodID);
     route.back();
   };
+  
 
   return (
+    <Animated.View className={"flex-1"} entering={SlideInRight}  exiting={SlideOutRight}>
+
+  
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1, paddingTop: insets.top }}
@@ -238,6 +243,9 @@ const AddJournal = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+
+    
+    </Animated.View>
   );
 };
 

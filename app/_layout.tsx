@@ -49,14 +49,14 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView className="flex-1 bg-[#141438]">
       <MenuProvider>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Navbar />
           <Slot />
-          <BottomBar />
+     
         </ThemeProvider>
       </MenuProvider>
     </GestureHandlerRootView>

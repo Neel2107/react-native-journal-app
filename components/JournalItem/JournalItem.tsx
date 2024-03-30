@@ -30,7 +30,7 @@ const JournalItem: React.FC<JournalItemProps> = ({
   };
 
   const longPressGesture = Gesture.LongPress()
-    .minDuration(600)
+    .minDuration(400)
     .onStart(() => {
       console.log("Long Pressed inside gesture");
       runOnJS(handleLongPress)();
@@ -47,6 +47,7 @@ const JournalItem: React.FC<JournalItemProps> = ({
   return (
     <GestureDetector gesture={longPressGesture}>
       <TouchableRipple
+      
         onPress={() => {
           journalItemClick();
         }}

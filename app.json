@@ -24,7 +24,6 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.myneel.journalapp"
-     
     },
     "web": {
       "bundler": "metro",
@@ -33,10 +32,7 @@
     },
     "plugins": [
       "expo-router",
-      "@react-native-google-signin/google-signin",
-      {
-        "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
-      }
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
@@ -46,8 +42,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "82350981-2123-462e-8290-9743bb7f1d4d"
+        "projectId": "db96704a-2b77-41a0-b145-4984199c7e5b"
       }
-    }
+    },
+    "owner": "neel1508"
   }
 }

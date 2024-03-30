@@ -18,7 +18,13 @@ import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { Searchbar, TouchableRipple } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { AntDesign } from "@expo/vector-icons";
-import Animated, { FadeInLeft, FadeOutLeft } from "react-native-reanimated";
+import Animated, {
+  FadeInLeft,
+  FadeOutLeft,
+  SlideInLeft,
+  SlideInRight,
+  SlideOutLeft,
+} from "react-native-reanimated";
 import { deleteJoural, getPosts } from "@/utils/postHelpers";
 import {
   Menu,
@@ -27,27 +33,29 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { sortOptions } from "@/constants/sortOptions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BottomBar from "@/components/BottomBar/BottomBar";
 
-export interface Journal {
+interface Journal {
+  id: number;
   title: string;
-  id: string;
-  jouranl_date: string;
+  content: string;
+  mood: string;
   date: string;
   time: string;
+  sorting_date: string;
 }
 const List = () => {
-
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [journals, setJournals] = useState<Journal[]>([]);
   const [loading, setLoading] = useState<boolean>(true); // Add a loading state
-  const [selectedJournalId, setSelectedJournalId] = useState<string | null>(
-    null
-  );
-
   const [isSearchEnabled, setisSearchEnabled] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredJournals, setFilteredJournals] = useState<Journal[]>([]); 
-  const [sortOption, setSortOption] = useState<number>(1); 
+  const [filteredJournals, setFilteredJournals] = useState<Journal[]>([]);
+  const [sortOption, setSortOption] = useState<number>(1);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -62,7 +70,6 @@ const List = () => {
   }, []);
 
   const sortJournals = (journals: any) => {
-    
     return [...journals].sort((a, b) => {
       // Parsing the sorting_date field to get time in milliseconds for comparison
       const dateA = new Date(a.sorting_date).getTime();
@@ -78,11 +85,48 @@ const List = () => {
         case 4: // Title Z-A
           return b.title.localeCompare(a.title);
         default:
-          // In case of an unknown sortOption, don't sort
-          return 0;
+          // Default to recent first
+        return dateB - dateA;
       }
     });
   };
+
+  const storeData = async (value: Journal[]) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem("@storage_Key", jsonValue);
+    } catch (e) {
+      // saving error
+      console.error("Error storing data:", e);
+    }
+  };
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@storage_Key");
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+      console.error("Error getting data:", e);
+    }
+  };
+
+  useEffect(() => {
+    const loadJournals = async () => {
+      const storedJournals = await getData();
+      if (storedJournals) {
+        console.log("Loaded data from AsyncStorage:");
+        setJournals(storedJournals);
+        setLoading(false); // Set loading to false once data is loaded from AsyncStorage
+      } else {
+        console.log("No data in AsyncStorage, fetching from API...");
+        setLoading(true);
+        fetchJournals();
+      }
+    };
+
+    loadJournals();
+  }, []);
 
   const fetchJournals = async () => {
     setLoading(true); // Assuming you have a setLoading state updater
@@ -102,7 +146,9 @@ const List = () => {
           sorting_date: journal.journal_date,
         };
       });
-      setJournals(sortJournals(formattedJournals)); // Apply sorting here
+      const sortedJournals = sortJournals(formattedJournals);
+      setJournals(sortedJournals);
+      storeData(sortedJournals); // Store the sorted journals
     } catch (error) {
       console.error(error);
     } finally {
@@ -114,25 +160,24 @@ const List = () => {
     fetchJournals();
   }, [sortOption]);
 
-  const router = useRouter();
-
   useEffect(() => {
-    // Filter journals based on the search query
     const filtered = journals.filter((journal) => {
-      // Adjust this condition to search in other fields if necessary
       return journal.title.toLowerCase().includes(searchQuery.toLowerCase());
     });
     setFilteredJournals(filtered);
   }, [journals, searchQuery]);
 
   const renderItem = ({ item }: { item: Journal }) => {
-   
     const deleteJournal = async () => {
       try {
         await deleteJoural(item.id);
-        setJournals((journals) =>
-          journals.filter((journal) => journal.id !== item.id)
-        );
+        setJournals((journals) => {
+          const updatedJournals = journals.filter(
+            (journal) => journal.id !== item.id
+          );
+          storeData(updatedJournals); // Store the updated journals
+          return updatedJournals;
+        });
       } catch (error) {
         console.error("Failed to delete journal:", error);
         alert("Failed to delete journal.");
@@ -152,10 +197,14 @@ const List = () => {
       />
     );
   };
-  const insets = useSafeAreaInsets();
+
 
   return (
-    <View className="flex-1 bg-[#141438]">
+    <Animated.View
+      entering={SlideInLeft}
+      exiting={SlideOutLeft}
+      className="flex-1 bg-[#141438]"
+    >
       <View
         style={{ paddingTop: insets.top }}
         className="flex flex-row px-4 justify-between items-center  py-2 bg-[#21215b]"
@@ -182,7 +231,6 @@ const List = () => {
               placeholderTextColor={"#e5e1ff"}
               style={{
                 height: 40, // adjust height as needed
-                
               }}
               theme={{
                 colors: {
@@ -304,7 +352,7 @@ const List = () => {
                   </View>
                 )}
                 keyExtractor={(journal: Journal) => journal.id}
-                contentContainerStyle={{ paddingBottom: 100 }} 
+                contentContainerStyle={{ paddingBottom: 100 }}
               />
             </View>
             {/* bottom gradient */}
@@ -319,7 +367,8 @@ const List = () => {
           </>
         )}
       </View>
-    </View>
+      <BottomBar />
+    </Animated.View>
   );
 };
 

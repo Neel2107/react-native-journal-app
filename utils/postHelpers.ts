@@ -67,8 +67,6 @@ export const updateJournal = async (
 
 
 
-//recent, oldest, a-z or z-a
-
 // postHelpers.ts
 export const getPosts = async () => {
   const { data, error } = await supabase
